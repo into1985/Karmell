@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vercel/
+.DS_Store
+Thumbs.db
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Nested app artifacts
+scroll/node_modules/
+scroll/dist/
