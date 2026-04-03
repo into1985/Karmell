@@ -2839,6 +2839,63 @@ top: calc(50% - 300px - 200px);
       .jalus-monogramm-wrap img {
         pointer-events: none;
       }
+
+      .hero-fragment--large,
+      .hero-fragment-fill--large,
+      .pakume-img,
+      .pakume-img::before,
+      .lahenemine-photo,
+      .lahenemine-photo::before {
+        touch-action: pan-y;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Avoid iOS/Safari touch-scroll glitches on clipped decorative media layers */
+      .hero-visual,
+      .hero-fragment,
+      .hero-fragment-fill,
+      .hero-fragment-fill--large,
+      .pakume-right,
+      .pakume-images,
+      .pakume-img,
+      .pakume-img::before,
+      .lahenemine-visual,
+      .lahenemine-floater,
+      .lahenemine-photo,
+      .lahenemine-photo::before,
+      .tellimine-ring-pilt,
+      .tellimine-ring-pilt::before {
+        will-change: auto !important;
+        transition: none !important;
+      }
+
+      .hero-visual,
+      .hero-fragment--circle,
+      .pakume-right,
+      .lahenemine-visual,
+      .lahenemine-floater,
+      .lahenemine-photo,
+      .tellimine-ring-pilt {
+        animation: none !important;
+        transform: none !important;
+      }
+
+      .hero-fragment-fill--large,
+      .pakume-img::before,
+      .lahenemine-photo::before,
+      .tellimine-ring-pilt::before {
+        transform: none !important;
+      }
+
+      .hero-visual,
+      .hero-fragment--circle,
+      .pakume-right,
+      .lahenemine-visual,
+      .lahenemine-floater,
+      .tellimine-ring-pilt {
+        opacity: 1 !important;
+      }
     }
 
   </style>
@@ -3533,6 +3590,11 @@ top: calc(50% - 300px - 200px);
       const floater = document.getElementById('lahFloater');
 
       if (!section || !photo || !content) return;
+      if (window.innerWidth <= 900 || window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+        photo.style.transform = '';
+        if (floater) floater.style.transform = '';
+        return;
+      }
 
       let ticking = false;
 
@@ -3572,6 +3634,10 @@ top: calc(50% - 300px - 200px);
       const ringpilt = document.querySelector('.tellimine-ring-pilt');
 
       if (!section || !ringpilt) return;
+      if (window.innerWidth <= 900 || window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+        ringpilt.style.transform = '';
+        return;
+      }
 
       // Eemaldame transition-i ringpildilt pärast reveal-animatsiooni lõppu,
       // et parallax ei jõnksutaks CSS transition vastu
@@ -3623,6 +3689,7 @@ top: calc(50% - 300px - 200px);
       const count      = catNames.length;
       let programmaticScroll = false;
       let scrollEndFallback  = null;
+      const isTouchLike = window.innerWidth <= 680 || window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
       function setActive(index) {
         if (index === currentIndex) return;
@@ -3655,6 +3722,11 @@ top: calc(50% - 300px - 200px);
           const index    = Math.min(Math.floor(progress * count), count - 1);
           setActive(index);
         }
+      }
+
+      if (isTouchLike) {
+        setActive(0);
+        return;
       }
 
       window.addEventListener('scrollend', () => {
