@@ -48,6 +48,16 @@
       cursor: pointer;
     }
 
+    a:focus-visible,
+    button:focus-visible,
+    [role="button"]:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--caramel);
+      outline-offset: 3px;
+    }
+
     :root {
       --cream:    #FDF6EE;
       --caramel:  #C8854A;
@@ -104,6 +114,7 @@
       color: var(--espresso);
       font-family: 'DM Sans', sans-serif;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -680,19 +691,6 @@ top: calc(50% - 300px - 200px);
     @media (hover: hover) {
       .hero-fragment--large:hover .hero-fragment-fill--large {
         transform: translateY(0) scale(1.14);
-      }
-    }
-
-    .hero-fragment-fill--small {
-      width: 100%;
-      height: 100%;
-      background: url('assets/hero-2.png') center / cover no-repeat;
-      transition: transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    @media (hover: hover) {
-      .hero-fragment--small:hover .hero-fragment-fill--small {
-        transform: scale(1.06);
       }
     }
 
@@ -2085,10 +2083,6 @@ top: calc(50% - 300px - 200px);
     }
 
     @media (max-width: 700px) {
-      html,
-      body {
-        overflow-x: hidden;
-      }
 
       .arvustused {
         padding-left: clamp(1.5rem, 5vw, 5rem);
@@ -2648,7 +2642,7 @@ top: calc(50% - 300px - 200px);
         font-size: 6.2rem;
       }
       .hero-fragment--circle {
-        top: calc(50% - 300px - 120px);
+        top: calc(50% - 300px - 30px);
       }
     }
 
@@ -2824,22 +2818,6 @@ top: calc(50% - 300px - 200px);
     }
 
     @media (hover: none), (pointer: coarse) {
-      .hero-visual,
-      .hero-fragment,
-      .hero-fragment-fill,
-      .pakume-right,
-      .pakume-images,
-      .pakume-img,
-      .pakume-thumb,
-      .lahenemine-visual,
-      .lahenemine-floater,
-      .lahenemine-photo,
-      .tellimine-ring-pilt,
-      .jalus-monogramm-wrap,
-      .jalus-monogramm-wrap img {
-        pointer-events: none;
-      }
-
       .hero-fragment--large,
       .hero-fragment-fill--large,
       .pakume-img,
@@ -2851,36 +2829,31 @@ top: calc(50% - 300px - 200px);
         user-select: none;
       }
 
-      /* Avoid iOS/Safari touch-scroll glitches on clipped decorative media layers */
+      /* Disable will-change and transitions only on parallax/fill layers
+         that don't participate in reveal animations */
       .hero-visual,
       .hero-fragment,
       .hero-fragment-fill,
       .hero-fragment-fill--large,
-      .pakume-right,
       .pakume-images,
       .pakume-img,
       .pakume-img::before,
-      .lahenemine-visual,
-      .lahenemine-floater,
       .lahenemine-photo,
       .lahenemine-photo::before,
-      .tellimine-ring-pilt,
       .tellimine-ring-pilt::before {
         will-change: auto !important;
         transition: none !important;
       }
 
-      .hero-visual,
-      .hero-fragment--circle,
+      /* Reveal containers — will-change reset only, transitions kept intact */
       .pakume-right,
       .lahenemine-visual,
       .lahenemine-floater,
-      .lahenemine-photo,
       .tellimine-ring-pilt {
-        animation: none !important;
-        transform: none !important;
+        will-change: auto !important;
       }
 
+      /* Prevent parallax transforms on fill layers */
       .hero-fragment-fill--large,
       .pakume-img::before,
       .lahenemine-photo::before,
@@ -2888,21 +2861,33 @@ top: calc(50% - 300px - 200px);
         transform: none !important;
       }
 
-      .hero-visual,
-      .hero-fragment--circle,
+      /* Mobile: section images — fade only, 0.8s, no vertical movement */
+      .hero-visual {
+        transform: none;
+        animation: fadeIn 0.8s var(--ease-warm) 1.1s forwards;
+      }
+
       .pakume-right,
       .lahenemine-visual,
-      .lahenemine-floater,
       .tellimine-ring-pilt {
-        opacity: 1 !important;
+        transform: translateY(0);
+        transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
       }
     }
 
   </style>
   <script>
-    document.fonts.ready.then(function() {
-      document.documentElement.classList.add('fonts-ready');
-    });
+    (function () {
+      function markFontsReady() {
+        document.documentElement.classList.add('fonts-ready');
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(markFontsReady, markFontsReady);
+      } else {
+        markFontsReady();
+      }
+    })();
   </script>
 </head>
 <body>
@@ -2913,7 +2898,7 @@ top: calc(50% - 300px - 200px);
   <nav class="nav" id="mainNav" aria-label="Peamine navigatsioon">
     <div class="nav-inner wrapper">
       <a href="#" class="nav-logo" aria-label="Karmell — avaleht">
-        <img src="assets/karmell_logo_header.svg" class="nav-logo-symbol" alt="" aria-hidden="true">
+        <img src="assets/karmell_logo_header.svg" class="nav-logo-symbol" alt="" aria-hidden="true" decoding="async">
         Karmell
       </a>
       <div class="nav-right">
@@ -3256,12 +3241,12 @@ top: calc(50% - 300px - 200px);
         <div class="galerii-col galerii-col--left">
           <figure class="galerii-item galerii-item--sq">
             <div class="galerii-img-wrap" data-parallax="0.13">
-              <img class="galerii-img" src="gallery/media-1.png" alt="Karmell karamelliglasuuriga mousse kook sarapuupähklite ja kullaga marmortaldrikul">
+              <img class="galerii-img" src="gallery/media-1.png" alt="Karmell karamelliglasuuriga mousse kook sarapuupähklite ja kullaga marmortaldrikul" loading="lazy" decoding="async">
             </div>
           </figure>
           <figure class="galerii-item galerii-item--sq">
             <div class="galerii-img-wrap" data-parallax="0.14">
-              <img class="galerii-img" src="gallery/media-2.png" alt="Tuhksuhkruga kaetud koorerulade lõige kreemja spiraliga puitalusel">
+              <img class="galerii-img" src="gallery/media-2.png" alt="Tuhksuhkruga kaetud koorerulade lõige kreemja spiraliga puitalusel" loading="lazy" decoding="async">
             </div>
           </figure>
           <div class="galerii-note" aria-hidden="true">
@@ -3280,12 +3265,12 @@ top: calc(50% - 300px - 200px);
         <div class="galerii-col galerii-col--center">
           <figure class="galerii-item galerii-item--portrait">
             <div class="galerii-img-wrap" data-parallax="0.07">
-              <img class="galerii-img" src="gallery/media-3.png" alt="Karmell käsitsi küpsetatud õunakook lõigatud, küpsed õunaviilud pealmisel kihil">
+              <img class="galerii-img" src="gallery/media-3.png" alt="Karmell käsitsi küpsetatud õunakook lõigatud, küpsed õunaviilud pealmisel kihil" loading="lazy" decoding="async">
             </div>
           </figure>
           <figure class="galerii-item galerii-item--sq">
             <div class="galerii-img-wrap" data-parallax="0.13">
-              <img class="galerii-img" src="gallery/media-7.png" alt="Karmell karamelli-drip tort valge kreemi ja karamellikastme niretisega valgel alusel">
+              <img class="galerii-img" src="gallery/media-7.png" alt="Karmell karamelli-drip tort valge kreemi ja karamellikastme niretisega valgel alusel" loading="lazy" decoding="async">
             </div>
           </figure>
         </div>
@@ -3306,12 +3291,12 @@ top: calc(50% - 300px - 200px);
           </div>
           <figure class="galerii-item galerii-item--sq">
             <div class="galerii-img-wrap" data-parallax="0.16">
-              <img class="galerii-img" src="gallery/media-4.png" alt="Käsitöö ploomitart lainelise põhjaga, karamellistunud ploomiviilude spiraal pealmises kihis">
+              <img class="galerii-img" src="gallery/media-4.png" alt="Käsitöö ploomitart lainelise põhjaga, karamellistunud ploomiviilude spiraal pealmises kihis" loading="lazy" decoding="async">
             </div>
           </figure>
           <figure class="galerii-item galerii-item--sq">
             <div class="galerii-img-wrap" data-parallax="0.12">
-              <img class="galerii-img" src="gallery/media-5.png" alt="Kreemikihtidega minikoek maasika ja vaarikaga taldrikul, Karmell käsitöö küpsetis">
+              <img class="galerii-img" src="gallery/media-5.png" alt="Kreemikihtidega minikoek maasika ja vaarikaga taldrikul, Karmell käsitöö küpsetis" loading="lazy" decoding="async">
             </div>
           </figure>
         </div>
@@ -3531,7 +3516,7 @@ top: calc(50% - 300px - 200px);
       <!-- Wordmark + tagline stacked, centered -->
       <div class="jalus-tutvustus reveal" style="transition-delay:0s">
         <div class="jalus-monogramm-wrap">
-          <img src="assets/karmell_logo_footer.svg" alt="" aria-hidden="true" style="height: 60px; width: auto; display: block;">
+          <img src="assets/karmell_logo_footer.svg" alt="" aria-hidden="true" decoding="async" style="height: 60px; width: auto; display: block;">
         </div>
         <p class="jalus-wordmark">Karmell</p>
         <p class="jalus-tagline">Loon Tartus maiustusi, mis teevad südame soojaks.</p>
@@ -3586,10 +3571,9 @@ top: calc(50% - 300px - 200px);
 
       const section = document.querySelector('.lahenemine');
       const photo   = document.querySelector('.lahenemine-photo');
-      const content = document.querySelector('.lahenemine-content');
       const floater = document.getElementById('lahFloater');
 
-      if (!section || !photo || !content) return;
+      if (!section || !photo) return;
       if (window.innerWidth <= 900 || window.matchMedia('(hover: none), (pointer: coarse)').matches) {
         photo.style.transform = '';
         if (floater) floater.style.transform = '';
@@ -3729,12 +3713,14 @@ top: calc(50% - 300px - 200px);
         return;
       }
 
-      window.addEventListener('scrollend', () => {
-        if (programmaticScroll) {
-          programmaticScroll = false;
-          clearTimeout(scrollEndFallback);
-        }
-      }, { passive: true });
+      if ('onscrollend' in window) {
+        window.addEventListener('scrollend', () => {
+          if (programmaticScroll) {
+            programmaticScroll = false;
+            clearTimeout(scrollEndFallback);
+          }
+        }, { passive: true });
+      }
 
       catNames.forEach((name, i) => {
         name.addEventListener('click', () => {
@@ -4649,7 +4635,7 @@ top: calc(50% - 300px - 200px);
     <div class="popup-panel" id="popupPanel">
 
       <!-- Close -->
-      <button class="popup-close" id="popupClose" aria-label="Sulge popup">
+      <button class="popup-close" id="popupClose" type="button" aria-label="Sulge popup">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M2 2L14 14M14 2L2 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
@@ -4796,14 +4782,14 @@ top: calc(50% - 300px - 200px);
         <div class="popup-confirm-inner">
           <h2 class="popup-confirm-heading">Aitäh!</h2>
           <p class="popup-confirm-body">Sinu soov jõudis minuni. Vaatan selle üle ja võtan Sinuga esimesel võimalusel ühendust!</p>
-          <button class="popup-btn-confirm-close" id="popupConfirmClose">Sulge</button>
+          <button class="popup-btn-confirm-close" id="popupConfirmClose" type="button">Sulge</button>
         </div>
       </div>
 
       <!-- Navigation -->
       <div class="popup-nav" id="popupNav">
-        <button class="popup-btn-back is-hidden" id="popupBack">Tagasi</button>
-        <button class="popup-btn-next" id="popupNext">Edasi</button>
+        <button class="popup-btn-back is-hidden" id="popupBack" type="button">Tagasi</button>
+        <button class="popup-btn-next" id="popupNext" type="button">Edasi</button>
       </div>
 
     </div><!-- /.popup-panel -->
@@ -4828,9 +4814,18 @@ top: calc(50% - 300px - 200px);
       const TOTAL_STEPS = 4;
       let currentStep = 1;
       const state = { product: null, date: null };
+      let lastFocusedTrigger = null;
+
+      function getFocusable(container) {
+        return Array.from(container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'))
+          .filter(function (el) {
+            return !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden') && el.offsetParent !== null;
+          });
+      }
 
       /* ── Open / Close ── */
       function openPopup() {
+        lastFocusedTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -4845,7 +4840,10 @@ top: calc(50% - 300px - 200px);
         overlay.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
         // Reset after animation
-        setTimeout(resetPopup, 320);
+        setTimeout(function () {
+          resetPopup();
+          if (lastFocusedTrigger) lastFocusedTrigger.focus();
+        }, 320);
       }
 
       function resetPopup() {
@@ -4879,7 +4877,28 @@ top: calc(50% - 300px - 200px);
       });
 
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && overlay.classList.contains('is-open')) closePopup();
+        if (!overlay.classList.contains('is-open')) return;
+
+        if (e.key === 'Escape') {
+          closePopup();
+          return;
+        }
+
+        if (e.key === 'Tab') {
+          var focusable = getFocusable(overlay);
+          if (!focusable.length) return;
+
+          var first = focusable[0];
+          var last = focusable[focusable.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       });
 
       /* ── Step management ── */
@@ -5067,14 +5086,25 @@ top: calc(50% - 300px - 200px);
       var hamburger  = document.getElementById('navHamburger');
       var mobileMenu = document.getElementById('mobileMenu');
       var mobileCta  = document.getElementById('mobileCta');
+      var lastMenuTrigger = null;
+
+      function getFocusable(container) {
+        return Array.from(container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+          .filter(function (el) {
+            return !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden') && el.offsetParent !== null;
+          });
+      }
 
       function openMobileMenu() {
+        lastMenuTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : hamburger;
         hamburger.classList.add('is-open');
         hamburger.setAttribute('aria-expanded', 'true');
         hamburger.setAttribute('aria-label', 'Sulge menüü');
         mobileMenu.classList.add('is-open');
         mobileMenu.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        var focusable = getFocusable(mobileMenu);
+        if (focusable.length) focusable[0].focus();
       }
 
       function closeMobileMenu() {
@@ -5084,7 +5114,11 @@ top: calc(50% - 300px - 200px);
         mobileMenu.classList.remove('is-open');
         mobileMenu.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
-        hamburger.focus();
+        if (lastMenuTrigger) {
+          lastMenuTrigger.focus();
+        } else {
+          hamburger.focus();
+        }
       }
 
       hamburger.addEventListener('click', function () {
@@ -5096,8 +5130,27 @@ top: calc(50% - 300px - 200px);
       });
 
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) {
+        if (!mobileMenu.classList.contains('is-open')) return;
+
+        if (e.key === 'Escape') {
           closeMobileMenu();
+          return;
+        }
+
+        if (e.key === 'Tab') {
+          var focusable = getFocusable(mobileMenu);
+          if (!focusable.length) return;
+
+          var first = focusable[0];
+          var last = focusable[focusable.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
         }
       });
 
@@ -5125,7 +5178,7 @@ top: calc(50% - 300px - 200px);
   <script>
     var lenisInstance = null;
 
-    if (window.innerWidth >= 1024) {
+    if (window.innerWidth >= 1024 && window.Lenis && window.gsap && window.ScrollTrigger) {
       lenisInstance = new Lenis({
         duration: 1.2,
         easing: function (t) { return 1 - Math.pow(1 - t, 4); }, // easeOutQuart
