@@ -2823,6 +2823,24 @@ top: calc(50% - 300px - 200px);
       }
     }
 
+    @media (hover: none), (pointer: coarse) {
+      .hero-visual,
+      .hero-fragment,
+      .hero-fragment-fill,
+      .pakume-right,
+      .pakume-images,
+      .pakume-img,
+      .pakume-thumb,
+      .lahenemine-visual,
+      .lahenemine-floater,
+      .lahenemine-photo,
+      .tellimine-ring-pilt,
+      .jalus-monogramm-wrap,
+      .jalus-monogramm-wrap img {
+        pointer-events: none;
+      }
+    }
+
   </style>
   <script>
     document.fonts.ready.then(function() {
