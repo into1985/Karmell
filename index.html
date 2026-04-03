@@ -4159,6 +4159,12 @@ top: calc(50% - 300px - 200px);
     .popup-overlay.is-open .popup-panel {
       transform: scale(1) translateY(0);
     }
+    @media (max-width: 700px) {
+      .popup-panel,
+      .popup-overlay.is-open .popup-panel {
+        transform: none;
+      }
+    }
 
     /* ─── CLOSE BUTTON ─── */
 
